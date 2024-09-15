@@ -1,0 +1,21 @@
+Summary of your purchases:
+
+AMOUNT SPENT		$99.99
+# GEMS PURCHASHED	2000
+
+--------------------------------------------------------
+ITEM PURCHASED		TYPE				# GEMS
+--------------		----				-------
+Skin                \                     199         
+Skin                \                     199         
+Skin                \                     199         
+Skin                \                     199         
+Skin                \                     199         
+Skin                \                     199         
+Skin                \                     199         
+Skin                \                     199         
+Skin                \                     199         
+Skin                \                     199         
+--------------------------------------------------------
+TOTAL # GEMS SPENT                        1990
+# GEMS LEFT                               10

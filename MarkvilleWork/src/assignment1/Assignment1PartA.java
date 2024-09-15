@@ -72,9 +72,9 @@ public class Assignment1PartA {
 	}
 	
 	//Description: This method checks the cost of the item being bought and whether the user can afford it.
-	//Parameters: The item being bought, the amount of gems we have, the array of skins, the array of brawlers, the bufferedreader for inputs
+	//Parameters: The item being bought, the amount of gems we have, the array of skins, the array of brawlers, the bufferedreader for inputs. Also the skin cost cuz apparently its not random
 	//Return: Returns the price of the item
-	public static int calculateCosts(String item,int gems,int[] skinCosts,String[] brawlerTypes, int[] brawlerCosts, BufferedReader in,PrintWriter outFile	) throws IOException{
+	public static int calculateCosts(String item,int gems,int[] skinCosts,String[] brawlerTypes, int[] brawlerCosts, BufferedReader in,PrintWriter outFile, int skinCost) throws IOException{
 		int itemCost = 0;
 		if (item.equalsIgnoreCase("Spray")) {
 			itemCost = 19;
@@ -85,7 +85,7 @@ public class Assignment1PartA {
 			item = "XP doubler";
 			outFile.printf("%-20s%-22s%-12d\n","XP doubler","\\",itemCost);
 		}else if (item.equalsIgnoreCase("skin")) {
-			itemCost = skinCosts[(int)(Math.random()*(6-0+1))];
+			itemCost = skinCost;
 			if (gems<itemCost) {
 				System.out.printf("It will cost %d gems to purchase skin. ",itemCost);
 			}
@@ -94,8 +94,13 @@ public class Assignment1PartA {
 			}
 			item = "skin";
 		}else if (item.equalsIgnoreCase("brawler")) {
-			itemCost = getBrawlerCost(gems, brawlerTypes,brawlerCosts, in,outFile);
-			item="brawler";
+			//Since we know we can't afford even 29 gems I just set the cost to 29 to print you do not have enough to buy this.
+			if (gems < 29){
+				itemCost = 29;
+			}else{
+				itemCost = getBrawlerCost(gems, brawlerTypes,brawlerCosts, in,outFile);
+				item="brawler";
+			}
 		}
 		
 		if (gems<itemCost) {
@@ -124,7 +129,8 @@ public class Assignment1PartA {
 							return brawlerCosts[i];							
 						}
 					}
-				}				
+				}
+				throw new NumberFormatException();
 			}catch (NumberFormatException e) {
 				System.out.print("Invalid. ");
 			}
@@ -141,10 +147,11 @@ public class Assignment1PartA {
 		int[] skinCosts = {29, 49, 79, 149, 199, 299, 499};
 		String[] brawlerTypes = {"Rare", "Super Rare", "Epic", "Mythic", "Legendary"};
 		int[] brawlerCosts = {29, 79, 169, 349, 699};
+		int skinCost = skinCosts[(int)(Math.random()*(6-0+1))];
 		
 		
 		PrintWriter outFile = new PrintWriter(new FileWriter("summary.txt"),true);
-		outFile.println("Summary of your purchases:");
+		outFile.println("Summary of your purchases:\n");
 		
 		//First paragraph
 		//Calculate the budget
@@ -157,22 +164,23 @@ public class Assignment1PartA {
 		//Calculate the amount of gems and change
 		int gems = getInput("Enter the gem pack to purchase (30, 80, 170, 360, 950, 2000): ", gemPacks,gemPackPrices,money,in);
 		int startGems = gems;
-		
-		for (int i = 0; i < 56;i++) {
-			outFile.print("-");
-		}	
-		outFile.println();
-		
+
+
 		double cost = getCost(gems,gemPacks,gemPackPrices);
 		outFile.printf("AMOUNT SPENT\t\t$%.2f\n",cost);
-		outFile.printf("# GEMS PURCHASHED\t%d\n",gems);
-		System.out.printf("\tYou paid $20.00. Your change is %.2f.%n%n", (money-cost));	
+		outFile.printf("# GEMS PURCHASHED\t%d\n\n",gems);
+		for (int i = 0; i < 56;i++) {
+			outFile.print("-");
+		}
+		outFile.println();
+		System.out.printf("\tYou paid $%.2f. Your change is %.2f.%n%n", money,(money-cost));
 		
 		//Second Paragraph
 		outFile.println("ITEM PURCHASED\t\tTYPE\t\t\t\t# GEMS");
-		
-		//For some reason outfile.print() doesn't work only println
 		outFile.println("--------------\t\t----\t\t\t\t-------");
+
+		//For some reason outfile.print() doesn't work only println
+
 		//for (int i = 0; i < 14;i++) {
 		//	outFile.print("Hello-");
 		//}
@@ -180,16 +188,12 @@ public class Assignment1PartA {
 		
 		boolean shopping = true;
 		do {
-			if (gems<19) {
-				System.out.println("You cannot afford anything. ");
-				//shopping = false;
-				break;
-			}
+
 			boolean itemPrinted = false;
 			System.out.print("Enter the item to purchase (spray, XP doubler, skin, brawler): ");
 			String item = in.readLine();
 			if (checkItem(item, items)) {
-				gems = calculateCosts(item, gems, skinCosts,brawlerTypes,brawlerCosts, in, outFile);
+				gems = calculateCosts(item, gems, skinCosts,brawlerTypes,brawlerCosts, in, outFile, skinCost);
 				itemPrinted = true;	
 				
 			}else {
@@ -197,6 +201,11 @@ public class Assignment1PartA {
 			}
 			if (itemPrinted) {
 				do {
+					if (gems<19) {
+						System.out.println("You cannot afford anything. ");
+						shopping = false;
+						break;
+					}
 					System.out.print("Are you buying anymore items? (y/n): ");
 					String response = in.readLine();
 					if (response.equalsIgnoreCase("Y")) {
@@ -212,14 +221,16 @@ public class Assignment1PartA {
 				}while(true);
 			}
 		}while(shopping);
+
 		for (int i = 0; i < 56;i++) {
 			outFile.print("-");
 		}
 		outFile.println();
-		outFile.printf("TOTAL # GEMS SPENT%26d\n",(startGems-gems));
-		outFile.printf("# GEMS LEFT%33d\n",gems);
+		outFile.printf("%-42s%d\n","TOTAL # GEMS SPENT",(startGems-gems));
+		outFile.printf("%-42s%d\n","# GEMS LEFT",gems);
 		System.out.printf("You have %d gems left. %nThank for your purchases. Summary of your purchases is recorded in summary.txt",gems );
-		
+
+		outFile.close();
 		
 		
 	}
