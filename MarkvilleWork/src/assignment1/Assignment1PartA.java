@@ -185,7 +185,8 @@ public class Assignment1PartA {
 		//	outFile.print("Hello-");
 		//}
 		//outFile.print("\t\t-----\t\t\t\t-------");
-		
+
+		//The entire process of buying items
 		boolean shopping = true;
 		do {
 
@@ -201,6 +202,7 @@ public class Assignment1PartA {
 			}
 			if (itemPrinted) {
 				do {
+					//If you are too poor the afford anything the program should end.
 					if (gems<19) {
 						System.out.println("You cannot afford anything. ");
 						shopping = false;
@@ -225,11 +227,12 @@ public class Assignment1PartA {
 		for (int i = 0; i < 56;i++) {
 			outFile.print("-");
 		}
+
 		outFile.println();
 		outFile.printf("%-42s%d\n","TOTAL # GEMS SPENT",(startGems-gems));
 		outFile.printf("%-42s%d\n","# GEMS LEFT",gems);
 		System.out.printf("You have %d gems left. %nThank for your purchases. Summary of your purchases is recorded in summary.txt",gems );
-
+		//Closing outFile.
 		outFile.close();
 		
 		
