@@ -1,0 +1,8 @@
+Summary of your purchases:
+
+AMOUNT SPENT		$4.99
+# GEMS PURCHASHED	80
+
+--------------------------------------------------------
+ITEM PURCHASED		TYPE				# GEMS
+--------------		----				-------

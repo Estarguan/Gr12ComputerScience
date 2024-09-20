@@ -15,6 +15,7 @@ public class Assignment1PartC {
        String line;
         long s = System.nanoTime();
         while ((line = inFile.readLine())!=null){
+        	
             int longestLength = 0;
             String ans ="";
             //int
@@ -40,6 +41,8 @@ public class Assignment1PartC {
                     rightCheck++;
                 }
             }
+            
+            //Idk if the line is empty if starting postion is 0 or 1 so Im assuming its 1...
             System.out.println("Finding the largest palindrome");
             System.out.println("Largest palindrome: " + ans);
             System.out.println("Starting position: " + (line.indexOf(ans)+1));
