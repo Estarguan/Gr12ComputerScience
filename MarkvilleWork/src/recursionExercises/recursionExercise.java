@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 
 public class recursionExercise {
 
+
     public static int bubbles(int customers){
         if (customers <= 0)return 0;
         if (customers == 1) return 2;
@@ -18,16 +19,17 @@ public class recursionExercise {
     }
 
     public static double sumDiff(int num){
+    	if (num == 0) return Double.NaN;
         if (num == 1) return 1;
         if (num == -1)return -1;
         if (num == 2)return -0.5;
         if (num == -2)return 0.5;
         if (Math.abs(num % 2) == 1){
-            if (num > 0) {return Math.round(1.0/num * 100000)/100000.0 + sumDiff (num - 2);}
-            else { return Math.round(1.0/num*100000)/100000.0 + sumDiff(num+2);}
+            if (num > 0) {return Math.round((1.0/num + sumDiff (num - 2)) * 100000)/100000.0 ;}
+            else { return Math.round((1.0/num + sumDiff(num+2))*100000)/100000.0;}
         }else{
-            if (num > 0){return Math.round(-1.0/num * 100000)/100000.0 + sumDiff(num-2);}
-            else{return Math.round(-1.0/num*100000)/100000.0 + sumDiff(num+2);}
+            if (num > 0){return Math.round((-1.0/num + sumDiff(num-2))* 100000)/100000.0;}
+            else{return Math.round((-1.0/num + sumDiff(num+2))*100000)/100000.0;}
         }
 
     }
@@ -45,6 +47,7 @@ public class recursionExercise {
     }
 
     public static int find(String line){
+    	if (line.isEmpty())return 0;
         if (line.length() == 1){
             return (Character.isUpperCase(line.charAt(0)) || !Character.isLetter(line.charAt(0))) ? 1 : 0;
         }else{
@@ -55,44 +58,39 @@ public class recursionExercise {
     public static String insert(String line, char letter){
         String tempLine = line.toUpperCase();
         if (line.length() == 0) return "";
+        if (!Character.isLetter(line.charAt(line.length()-1)))return insert(line.substring(0,line.length()-1),letter);
         if (line.length() == 1) return Character.isLetter(line.charAt(0)) ? ""+ line.charAt(0) : "";
         if (line.length() == 2){
-            if (tempLine.charAt(0) == tempLine.charAt(1)){
+            if (Character.isLetter(tempLine.charAt(0)) && tempLine.charAt(0) == tempLine.charAt(1)){
                 return "" + line.charAt(0) + letter + line.charAt(1);
-            }else{
-                return "" + line.substring(0,2);
             }
+            if (Character.isLetter(line.charAt(0)) && Character.isLetter(line.charAt(1))) return "" + line.substring(0,2);
+            if (!Character.isLetter(line.charAt(0)) && Character.isLetter(line.charAt(1))) return "" + line.charAt(1);
+            return "";
+            
         }
-        if (tempLine.charAt(line.length()-1) == tempLine.charAt(line.length()-2)){
+        if (Character.isLetter(tempLine.charAt(line.length()-1)) && tempLine.charAt(line.length()-1) == tempLine.charAt(line.length()-2)){
             return "" + insert(line.substring(0,line.length()-1),letter) + letter + line.charAt(line.length()-1);
         }
         if (!Character.isLetter(line.charAt(line.length()-2))){
-            return "" + insert(line.substring(0,line.length()-2),letter) + line.charAt(line.length()-1);
+            char lastLetter = line.charAt(line.length()-1);
+            return "" + insert(line.substring(0,line.length()-2) + lastLetter,letter);
         }
         return "" + insert(line.substring(0,line.length()-1),letter) + line.charAt(line.length()-1);
     }
 
-    public static String commas(String line){
-        if (!Character.isLetter(line.charAt(line.length()-1))){
-            line += 'a';
-            return commas(line);
-        }if (line.length() == 2){
-            if (line.charAt(0) == '-')return "-";
-            if (line.charAt(line.length()-1) == 'd') return ""+line.charAt(0) + ',';
-            return "" + line.charAt(0);
+    public static String commas(int number){
+        if (Math.abs(number)<1000) {
+        	if (number>0) {
+        		return "+"+ number;
+        	}return ""+number;
+        }if (Math.abs(number%1000)<10) {
+        	return commas(number/1000)+",00" + Math.abs(number)%1000;
         }
-        //abcde
-        if (line.charAt(line.length()-1) == 'c'){
-            char lastNum = line.charAt(line.length()-2);
-            line = line.substring(0,line.length()-2);
-            line += 'a';
-            return commas(line) + ',' + lastNum;
-        }else{
-            char lastNum = line.charAt(line.length()-2);
-            char newChar = (char)((int)(line.charAt(line.length()-1))+1);
-            line = line.substring(0,line.length()-2);
-            return commas(line + newChar) + lastNum;
+        if (Math.abs(number%1000) <100) {
+        	return commas(number/1000)+",0"+Math.abs(number)%1000;
         }
+        return commas(number/1000) + "," + Math.abs(number)%1000;
     }
 
     public static double amongUs(String[] numbers,int numCount,int curIdx,double sum){
@@ -100,16 +98,19 @@ public class recursionExercise {
         if (curIdx == numbers.length){
             return  Math.round((sum / numCount) * 100.0) / 100.0;
         }
-
-        if (Character.isLetter(numbers[curIdx].charAt(0))){
+        
+        try {
+        	double num = Double.parseDouble(numbers[curIdx]);
+            return amongUs(numbers,numCount+1,curIdx+1,sum+num);
+        }catch(NumberFormatException e) {
             return amongUs(numbers,numCount,curIdx+1,sum);
-        }return amongUs(numbers,numCount+1,curIdx+1,sum+Double.parseDouble(numbers[curIdx]));
+
+        }
 
     }
 
 
     public static void main (String [] args) throws IOException {
-
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Which question you want to do. (Insert number from 1-7)");
         int num = Integer.parseInt(in.readLine());
@@ -124,12 +125,13 @@ public class recursionExercise {
         }else if (num == 5){
             System.out.println(insert(in.readLine(),in.readLine().charAt(0)));
         }else if (num == 6){
-            System.out.println(commas(in.readLine()));
+        	System.out.println(commas(Integer.parseInt(in.readLine())));
         }else if (num == 7){
             String line = in.readLine();
             String[] arr = line.split(" ");
-            System.out.printf("%.2f",amongUs(arr,0,0,0));
+            System.out.println(amongUs(arr,0,0,0));
         }
 
     }
+
 }
