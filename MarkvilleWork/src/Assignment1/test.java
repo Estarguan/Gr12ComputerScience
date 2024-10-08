@@ -1,4 +1,4 @@
-package assignment1;
+package Assignment1;
 import java.io.*;
 import java.nio.Buffer;
 import java.util.*;
