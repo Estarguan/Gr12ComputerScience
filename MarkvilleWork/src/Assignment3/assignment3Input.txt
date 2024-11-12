@@ -1,0 +1,98 @@
+63% hulK caseTesting
+52% HULk caseTESTINGs
+10%    spaces    SpaceTesting
+  60%   asd    nature
+80%    TREE     nature
+70%  h
+12% testCase4 tesTcase
+12% testCase3 tesTcase
+13% testCase1 tesTcase
+
+20% poop hello
+
+60% asd nature
+30% tree nature
+4% plant nature
+80% tree student
+20% tree cheese
+6% plant nature
+7% a nature
+% dsaasdasd nature
+coolio tree nature
+60% estar student
+5% computer tech
+5% error
+5% jonathan student
+6% tim student
+60% estar cheese
+40% estar student
+10% A comedy
+20% A comedy
+15% A comedy
+90% A comedy2
+90% B comedy2
+90% C comedy2
+50 M m
+
+15% A test
+20% A test2
+30% A test3
+21% B tom
+21% B tom2
+21% B tom1
+4.43% plant nature
+7.47% a nature
+% dsaasdasd nature
+coolio tree nature
+5% computer tech
+5% error
+5% jonathan student
+6% tim student
+60% estar student
+90% A comedy
+90% B comedy
+90% C comedy
+50% test test
+50% test test
+60.1% a apple
+60.2% a apple
+60.3% a apple
+70.3% b j
+70.4% b c
+70.5% b l
+23.2456% roundingCheck check
+-10% NegRatingTest NA
+110% SurplusRatingTest NA
+One_Word_Test
+Two_Word Test
+%20 Percent_TwoWordTest
+sick% InvalidDouble Test
+20% testTest
+
+20%    Spacious    Title     Test
+ 21.69% UnexpectedSpaces Test
+12.7654% DecimalRating Test
+
+10% ATR Comedy
+50% ATR Comedy
+15% ATR Comedy
+
+0% ATG FactionWars
+0% ATG Zoinks
+0% ATG Buffoonery
+
+50% Derpus3 AGT
+50% Derpus1 AGT
+50% Derpus2 AGT
+
+30% Laugh Track AGR
+80% Laugh Track AGR
+40% Laugh Track AGR
+
+10% CT Funny5
+50% CT Funny2
+15% CT Funny9
+
+97.8% CG3 Derpus55
+67.9% CG1 Derpus55
+67.1% CG2 Derpus55
