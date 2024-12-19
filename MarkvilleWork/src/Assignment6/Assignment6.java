@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 
-public class Assignment6 implements ActionListener {
+public class Assignment6 implements ActionListener  {
 	//Global Vars
 	public static JComboBox<String> fileDropDown;
 	public static JTextArea outputField;
@@ -38,6 +38,8 @@ public class Assignment6 implements ActionListener {
     	fileDropDown.addActionListener(this);
     	fileDropDown.setActionCommand("file chosen");
         outputField.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        myButton.addActionListener(this);
+        myButton.setActionCommand("add file");
     	
      	myPanel.add(leftPanel);
     	myPanel.add(previewField);
@@ -83,7 +85,7 @@ public class Assignment6 implements ActionListener {
                         }
                     }
 
-                    //remove 's except the 4 sepcial cases
+                    //remove 's except the 4 special cases
                     if (word.endsWith("'s") && !specialCases.contains(word)) {
                         word = word.substring(0, word.length() - 2);
                         needChange = true;
@@ -111,14 +113,15 @@ public class Assignment6 implements ActionListener {
         for (int i = 0; i < 20; i++){
             if (pq.peek() == null)break;
             WordObj removedWord = pq.poll();
-            if (i<10){
+            //Making the spacing line up perfectly	
+            if (i<9){
             output.append(String.format("\t%d) %-24s%d%n", (i+1),removedWord.getWord(),removedWord.getFreq()));
             }else {
                 output.append(String.format("\t%d) %-23s%d%n", (i+1),removedWord.getWord(),removedWord.getFreq()));
 
             }
         }
-        return String.format("\tTotal Time: %d milleseconds%n%n\t20 Most Frequent Words%n\tWords\t\tFrequency%n%s",(System.currentTimeMillis()-startTime), output);
+        return String.format("\tTotal Time: %d milleseconds%n%n\t20 Most Frequent Words%n\tWords\t\t\tFrequency%n%s",(System.currentTimeMillis()-startTime), output);
     }
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -131,6 +134,15 @@ public class Assignment6 implements ActionListener {
 				JOptionPane.showMessageDialog(null, "IOException Try Again",
                         "File Error", JOptionPane.ERROR_MESSAGE);
 			}
+		}
+		else if (command.equals("add file")) {
+			JFileChooser chooseFile = new JFileChooser();
+			int option = chooseFile.showOpenDialog(null);
+            if (option == JFileChooser.APPROVE_OPTION) {
+                File file = chooseFile.getSelectedFile(); //get file
+                fileDropDown.addItem(file.getName()); //add file name to dropdown
+            }
+			
 		}
 	}
 }
