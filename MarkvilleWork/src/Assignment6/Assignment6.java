@@ -34,8 +34,10 @@ public class Assignment6 implements ActionListener {
     	leftPanel.add(topPanel,BorderLayout.NORTH);
     	fileDropDown.addItem("ALICE.txt");
     	fileDropDown.addItem("MOBY.txt");
+        fileDropDown.addItem("Assignment6Input.txt");
     	fileDropDown.addActionListener(this);
     	fileDropDown.setActionCommand("file chosen");
+        outputField.setFont(new Font("Monospaced", Font.PLAIN, 14));
     	
      	myPanel.add(leftPanel);
     	myPanel.add(previewField);
@@ -58,43 +60,50 @@ public class Assignment6 implements ActionListener {
         specialCases.add("it's");
         specialCases.add("there's");
         long startTime = System.currentTimeMillis();
-        while((line = inFile.readLine())!= null){
+        while((line = inFile.readLine())!= null) {
+            StringTokenizer st = new StringTokenizer(line, " ");
+            while (st.hasMoreTokens()) {
 
-            //This should remove every single whitespace
-            String[] words = line.split("\\s+");
-            
-            
-            
-            for (String word : words){
-            	word = word.toLowerCase();
-            	if (!specialCases.contains(word)) {
-            		 //It says to make it case insensitive
-                    //So $ means at the end and ^ means at the start apparently
-                    word = word.replaceAll("^'+|'$+", "");
+                String word = st.nextToken().toLowerCase();
+                word = word.toLowerCase();
+                boolean needChange = true;
 
-                    //Im removing every 's so all possevive gets removed, only issue is that he's gets turned into he. 0 clue how to fix that
-                    word = word.replaceAll("'s$", "");
+                while (needChange) {
 
-                    //if its not a character, number, ', or - remove it. So keep all digits but remove ALL symbols.
-                    word = word.replaceAll("[^\\w\\d'-]+", "");
+                    //I accept all numbers. If there is a symbol in the middle of the word (not leading or trailing) I just treat is as a letter.
+                    //''-5hello#!@@#123 will be 5hello#!@@#123 because the numbers are kept meaning the symbols are between numbers and are treated as letters.
 
-                    //Since I don't remove - at start and end later in the code I do it now. All occurences included so --hellothere'' becomes hellothere
-                    word = word.replaceAll("^-+|-$+","");
-                    //Standalone characters become empty strings and I dont wanna add that to my map
-            	}
-                if (word.isEmpty()){
-                    continue;
+                    needChange = false;
+
+                    //remove leading symbols/numbers
+                    if (!word.isEmpty()) {
+                        if (!Character.isLetter(word.charAt(0)) && !Character.isDigit(word.charAt(0))) {
+                            word = word.substring(1);
+                            needChange = true;
+                        }
+                    }
+
+                    //remove 's except the 4 sepcial cases
+                    if (word.endsWith("'s") && !specialCases.contains(word)) {
+                        word = word.substring(0, word.length() - 2);
+                        needChange = true;
+                    }
+                    //remove trailing symbols/numbers
+                    if (!word.isEmpty()) {
+                        if (!Character.isLetter(word.charAt(word.length() - 1)) && !Character.isDigit(word.charAt(word.length()-1))) {
+                            word = word.substring(0, word.length() - 1);
+                            needChange = true;
+                        }
+                    }
+
+                }
+                if (!word.isEmpty()){
+                wordMap.putIfAbsent(word, new WordObj(word, 0));
+                wordMap.get(word).addOne();
                 }
 
-                //wordMap.put(word,new WordObj(word,wordMap.getOrDefault(word, new WordObj(word,0)).getFreq()+1));
-                wordMap.putIfAbsent(word, new WordObj(word,0));
-                wordMap.get(word).addOne();
-                //                if (wordMap.containsKey(word)){
-//                    wordMap.get(word).addOne();
-//                }else{
-//                    wordMap.put(word,new WordObj(word,1));
-//                }
             }
+
         }
         inFile.close();
         PriorityQueue <WordObj> pq = new PriorityQueue<>(wordMap.values());
@@ -102,9 +111,13 @@ public class Assignment6 implements ActionListener {
         for (int i = 0; i < 20; i++){
             if (pq.peek() == null)break;
             WordObj removedWord = pq.poll();
-            output.append(String.format("\t%d) %s\t\t%d%n", (i+1),removedWord.getWord(),removedWord.getFreq()));
+            if (i<10){
+            output.append(String.format("\t%d) %-24s%d%n", (i+1),removedWord.getWord(),removedWord.getFreq()));
+            }else {
+                output.append(String.format("\t%d) %-23s%d%n", (i+1),removedWord.getWord(),removedWord.getFreq()));
+
+            }
         }
-        
         return String.format("\tTotal Time: %d milleseconds%n%n\t20 Most Frequent Words%n\tWords\t\tFrequency%n%s",(System.currentTimeMillis()-startTime), output);
     }
 	@Override
@@ -113,6 +126,7 @@ public class Assignment6 implements ActionListener {
 		if (command.equals("file chosen")) {
 			try {
 				outputField.setText(handleFile(fileDropDown.getSelectedItem().toString()));
+
 			} catch (IOException exception) {
 				JOptionPane.showMessageDialog(null, "IOException Try Again",
                         "File Error", JOptionPane.ERROR_MESSAGE);
