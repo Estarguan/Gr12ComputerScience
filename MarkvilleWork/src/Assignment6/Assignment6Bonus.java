@@ -13,53 +13,54 @@ import javax.swing.*;
 //This program allows users to select txt files and see the top 20 words that appear in that file as well as the file itself
 //The files of the story Moby Dick and Alice in the Wonderland should be preloaded upon opening
 
-public class Assignment6 implements ActionListener  {
-	//Global Vars
-	public static JComboBox<String> fileDropDown;
-	public static JTextArea outputField;
+public class Assignment6Bonus implements ActionListener  {
+    //Global Vars
+    public static JComboBox<String> fileDropDown;
+    public static JTextArea outputField;
     public static JTextArea previewField;
 
     //Constructor of code that runs when an instance of Assignment 6 is made. I declare all my graphic variables here
     //Parameters: None
     //Return: None
-	public Assignment6() {
-		JFrame myFrame = new JFrame("Assignment6");
-    	JPanel myPanel = new JPanel();
-    	JPanel leftPanel = new JPanel();
-    	JPanel topPanel = new JPanel();
-    	JButton myButton = new JButton("Add File");
-    	previewField = new JTextArea();
+    public Assignment6Bonus() {
+        JFrame myFrame = new JFrame("Assignment6");
+        JPanel myPanel = new JPanel();
+        JPanel leftPanel = new JPanel();
+        JPanel topPanel = new JPanel();
+        JButton myButton = new JButton("Add File");
+        previewField = new JTextArea();
         JScrollPane previewScrollPane = new JScrollPane(previewField);
-    	fileDropDown = new JComboBox<>();
-    	outputField = new JTextArea();
-    	
-    	leftPanel.setLayout(new BorderLayout());    
-    	leftPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    	myPanel.setPreferredSize(new Dimension(1200,800));
-    	myPanel.setLayout(new GridLayout(1,2));
-    	
-    	leftPanel.add(outputField,BorderLayout.CENTER);
-    	topPanel.add(myButton);
-    	topPanel.add(fileDropDown);
-    	leftPanel.add(topPanel,BorderLayout.NORTH);
-    	fileDropDown.addItem("ALICE.txt");
-    	fileDropDown.addItem("MOBY.txt");
-    	fileDropDown.addActionListener(this);
-    	fileDropDown.setActionCommand("file chosen");
+        fileDropDown = new JComboBox<>();
+        outputField = new JTextArea();
+        JScrollPane outputScrollPane = new JScrollPane(outputField);
+
+        leftPanel.setLayout(new BorderLayout());
+        leftPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        myPanel.setPreferredSize(new Dimension(1200,800));
+        myPanel.setLayout(new GridLayout(1,2));
+
+        leftPanel.add(outputScrollPane,BorderLayout.CENTER);
+        topPanel.add(myButton);
+        topPanel.add(fileDropDown);
+        leftPanel.add(topPanel,BorderLayout.NORTH);
+        fileDropDown.addItem("ALICE.txt");
+        fileDropDown.addItem("MOBY.txt");
+        fileDropDown.addActionListener(this);
+        fileDropDown.setActionCommand("file chosen");
         outputField.setFont(new Font("Monospaced", Font.PLAIN, 14));
         myButton.addActionListener(this);
         myButton.setActionCommand("add file");
-    	
-     	myPanel.add(leftPanel);
-    	myPanel.add(previewScrollPane);
-    	myFrame.add(myPanel);
-    	myFrame.pack();
-    	myFrame.setVisible(true);
-	}
+
+        myPanel.add(leftPanel);
+        myPanel.add(previewScrollPane);
+        myFrame.add(myPanel);
+        myFrame.pack();
+        myFrame.setVisible(true);
+    }
 
     //Main Method
     public static void main(String[] args){
-    	new Assignment6();
+        new Assignment6Bonus();
     }
 
     //This method reads through our selected textfile adds all words to a hashmap which tracks each words frequency's in a word object
@@ -67,16 +68,37 @@ public class Assignment6 implements ActionListener  {
     //Parameters: The name of the file we are taking in
     //Return: The string we need to display in our textfield
     public String handleFile(String fileName) throws IOException{
-    	BufferedReader inFile = new BufferedReader(new FileReader(fileName));
+        int chapter = 0;
+        BufferedReader inFile = new BufferedReader(new FileReader(fileName));
         String line;
-        HashMap<String, WordObj> wordMap = new HashMap<>();
+        HashMap<String, Word> wordMap = new HashMap<>();
         HashSet<String> specialCases = new HashSet<>();
         specialCases.add("he's");
         specialCases.add("she's");
         specialCases.add("it's");
         specialCases.add("there's");
+        StringBuilder output = new StringBuilder();
         long startTime = System.currentTimeMillis();
         while((line = inFile.readLine())!= null) {
+            if (line.contains(".. < chapter")){
+                if (chapter != 0){
+                    PriorityQueue <Word> pq = new PriorityQueue<>(wordMap.values());
+                    output.append("Chapter " + chapter+":\n");
+                    for (int i = 0; i < 10; i++){
+                        if (pq.peek() == null)break;
+                        Word removedWord = pq.poll();
+                        //Making the spacing line up perfectly
+                        if (i<9){
+                            output.append(String.format("\t%d) %-24s%d%n", (i+1),removedWord.getWord(),removedWord.getFreq()));
+                        }else {
+                            output.append(String.format("\t%d) %-23s%d%n", (i+1),removedWord.getWord(),removedWord.getFreq()));
+                        }
+                    }
+                    wordMap = new HashMap<>();
+                }
+                chapter++;
+
+            }
             StringTokenizer st = new StringTokenizer(line, " ");
             while (st.hasMoreTokens()) {
 
@@ -114,25 +136,26 @@ public class Assignment6 implements ActionListener  {
 
                 }
                 if (!word.isEmpty()){
-                wordMap.putIfAbsent(word, new WordObj(word, 0));
-                wordMap.get(word).addOne();
+                    wordMap.putIfAbsent(word, new Word(word, 0));
+                    wordMap.get(word).addOne();
                 }
 
             }
 
         }
         inFile.close();
-        PriorityQueue <WordObj> pq = new PriorityQueue<>(wordMap.values());
-        StringBuilder output = new StringBuilder();
-        for (int i = 0; i < 20; i++){
+        //You will always miss the last chapter otherwise as the chapters loop ends the moment the lines are finished and the last line will not have the word chapter
+        PriorityQueue <Word> pq = new PriorityQueue<>(wordMap.values());
+        if (chapter != 0)
+        output.append("Chapter " + chapter+":\n");
+        for (int i = 0; i < 10; i++){
             if (pq.peek() == null)break;
-            WordObj removedWord = pq.poll();
-            //Making the spacing line up perfectly	
+            Word removedWord = pq.poll();
+            //Making the spacing line up perfectly
             if (i<9){
-            output.append(String.format("\t%d) %-24s%d%n", (i+1),removedWord.getWord(),removedWord.getFreq()));
+                output.append(String.format("\t%d) %-24s%d%n", (i+1),removedWord.getWord(),removedWord.getFreq()));
             }else {
                 output.append(String.format("\t%d) %-23s%d%n", (i+1),removedWord.getWord(),removedWord.getFreq()));
-
             }
         }
         return String.format("\tTotal Time: %d milleseconds%n%n\t20 Most Frequent Words%n\tWords\t\t\tFrequency%n%s",(System.currentTimeMillis()-startTime), output);
@@ -156,43 +179,43 @@ public class Assignment6 implements ActionListener  {
     //Click the dropdown menu's items. When clicked it will run methods depedning on the action commands
     //Parameters: ActionEvent e which is an object that contains data from the actions/events that occurred.
     //Return: Void
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		String command = e.getActionCommand();
-		if (command.equals("file chosen")) {
-			try {
-				outputField.setText(handleFile(fileDropDown.getSelectedItem().toString()));
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String command = e.getActionCommand();
+        if (command.equals("file chosen")) {
+            try {
+                outputField.setText(handleFile(fileDropDown.getSelectedItem().toString()));
                 previewField.setText(previewFile(fileDropDown.getSelectedItem().toString()));
-			} catch (IOException exception) {
-				JOptionPane.showMessageDialog(null, "IOException Try Again",
+            } catch (IOException exception) {
+                JOptionPane.showMessageDialog(null, "IOException Try Again",
                         "File Error", JOptionPane.ERROR_MESSAGE);
-			}
-		}
-		else if (command.equals("add file")) {
-			JFileChooser chooseFile = new JFileChooser();
-			int option = chooseFile.showOpenDialog(null);
+            }
+        }
+        else if (command.equals("add file")) {
+            JFileChooser chooseFile = new JFileChooser();
+            int option = chooseFile.showOpenDialog(null);
             if (option == JFileChooser.APPROVE_OPTION) {
                 File file = chooseFile.getSelectedFile(); //get file
                 if (file.getName().endsWith(".txt")){
-                fileDropDown.addItem(file.getName()); //add file name to dropdown
+                    fileDropDown.addItem(file.getName()); //add file name to dropdown
                 }else{
                     JOptionPane.showMessageDialog(null, "Not a .txt file",
                             "File Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-			
-		}
-	}
+
+        }
+    }
 }
 
 //My word object class which stores the name of the word as well as the frequency it appears
-class WordObj implements Comparable<WordObj>{
+class Word implements Comparable<Word>{
     //Made variables static because all objects of the same word should have the same word and same freq ALTHOUGH there should never be one instance of each word.
     private String word;
     private int freq;
 
     //Constructor of the word object which intializes our word string as well as its starting frequency which is typically 0.
-    public WordObj(String word, int freq){
+    public Word(String word, int freq){
         this.word = word;
         this.freq = freq;
     }
@@ -229,7 +252,7 @@ class WordObj implements Comparable<WordObj>{
     //Parameters: WordObj o we are comparing to
     //Return: int which determines which object goes first in the sort order
     @Override
-    public int compareTo(WordObj o) {
+    public int compareTo(Word o) {
         return o.freq-this.freq;
     }
 }
